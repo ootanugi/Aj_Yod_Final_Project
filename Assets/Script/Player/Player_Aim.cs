@@ -1,10 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
+using UnityEngine.Experimental.Rendering.Universal;
+
 
 public class Player_Aim : MonoBehaviour
 {
     public float Aim_Range;
+    public Light2D light2D;
+    public CinemachineVirtualCamera virtualCamera1;
     public Rigidbody2D rb2D;
     public Joystick joystick;
     public LayerMask TargetMask,ObstacleMask;
@@ -20,8 +25,33 @@ public class Player_Aim : MonoBehaviour
     void Update()
     {
         LookAtTarget();
-        
+        if(light2D.pointLightOuterRadius != Aim_Range)
+        {
+            Light_Radius();
+        }
     }
+
+    public void Light_Radius()
+    {
+        if (light2D.pointLightOuterRadius > Aim_Range)
+        {
+            light2D.pointLightOuterRadius-=.01f;
+          
+        }
+        else if(light2D.pointLightOuterRadius < Aim_Range)
+        {
+            light2D.pointLightOuterRadius +=.01f;
+        }
+        if(virtualCamera1.m_Lens.OrthographicSize < Aim_Range+1)
+        {
+          virtualCamera1.m_Lens.OrthographicSize += .03f;
+        }
+        else if(virtualCamera1.m_Lens.OrthographicSize > Aim_Range + 1)
+        {
+            virtualCamera1.m_Lens.OrthographicSize -= .03f;
+        }
+    }
+
     IEnumerator FindTargetDelay(float Delay)
     {
         while (true)
